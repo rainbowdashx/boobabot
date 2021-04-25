@@ -12,6 +12,7 @@
     "cheerio": "^1.0.0-rc.6",
     "discord.js": "^12.5.3",
     "node-fetch": "^2.6.1",
+    "node-storage": "0.0.9",
     "puppeteer": "^9.0.0"
   }
 }
