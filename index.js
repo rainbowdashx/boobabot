@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const Discord = require('discord.js');
 const { default: fetch } = require('node-fetch');
 const cheerio = require('cheerio');
@@ -9,11 +10,13 @@ var store = new Storage('boobas.txt');
 
 const client = new Discord.Client();
 client.on('ready', async () => {
-    setInterval(async () => {
+
+    let handler = async () => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto("https://booba.tv/");
         let bodyHTML = await page.evaluate(() => document.body.innerHTML);
+        await browser.close();
 
         const $ = cheerio.load(bodyHTML);
         let out = [];
@@ -34,7 +37,7 @@ client.on('ready', async () => {
             out = out.join("\n");
             out = "New Boobas \n" + out;
         } else {
-            out = "No new booba :( :(";
+            out = "";
         }
         try {
             let toSay = out;
@@ -50,12 +53,17 @@ client.on('ready', async () => {
                     });
                 });*/
 
-            client.channels.cache.get("835998143857950751").send(out);
+            if (out.length > 0) {
+                client.channels.cache.get("835998143857950751").send(out);
+            }
         }
         catch (err) {
-            console.log("Could not send message to a (few) guild(s)!");
+            console.log("Could not send message");
         }
-    }, 10 * 60 * 1000);
+    };
+
+    setInterval(handler, 10 * 60 * 1000);
+    handler();
 });
 
 client.on('message', async message => {
@@ -64,4 +72,4 @@ client.on('message', async message => {
     }
 });
 
-client.login('');
+client.login(process.env.DISCORD_KEY);
